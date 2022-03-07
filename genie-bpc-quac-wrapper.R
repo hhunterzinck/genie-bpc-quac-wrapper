@@ -10,12 +10,12 @@ library(glue)
 library(dplyr)
 library(yaml)
 library(synapser)
-source("fxns.R")
+source("fxns-wrapper.R")
 
 synlogin_status <- synLogin()
 
 # parameters
-config <- read_yaml("config.yaml")
+config <- read_yaml("config-wrapper.yaml")
 unit <- "hour"
 value <- 1
 
