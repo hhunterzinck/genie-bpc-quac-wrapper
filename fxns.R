@@ -151,8 +151,8 @@ send_notification <- function(cohort, site) {
   synid_file_report <- as.character(synid_files_cohort[tolower(glue("{cohort}_{site}_upload_error.csv"))])
   
   url <- glue("https://www.synapse.org/#!Synapse:{synid_file_report}")
-  subject <- glue("New BPC {cohort} QA report available")
-  body <- glue("A new QA report for your recent BPC {cohort} upload is available at the link below:\n\n{url}\n\nPlease correct the errors noted in the report and respond to this email with any questions.\n\nThank you,\nSage Bionetworks")
+  subject <- glue("New BPC {cohort} {site} QA report available")
+  body <- glue("A new QA report for your recent BPC {cohort} {site} upload is available at the link below:\n\n{url}\n\nPlease correct the errors noted in the report and respond to this email with any questions.\n\nThank you,\nSage Bionetworks")
   
   res <- synSendMessage(userIds = list(user_ids), messageSubject = subject, messageBody = body)
   
