@@ -10,9 +10,9 @@ library(glue)
 library(dplyr)
 library(yaml)
 library(synapser)
-synLogin()
-
 source("fxns.R")
+
+synlogin_status <- synLogin()
 
 # parameters
 config <- read_yaml("config.yaml")

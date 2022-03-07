@@ -6,6 +6,65 @@ config <- read_yaml("config.yaml")
 
 # functions ----------------------------
 
+#' Extract personal access token from .synapseConfig
+#' located at a custom path. 
+#' 
+#' @param path Path to .synapseConfig
+#' @return personal acccess token
+get_auth_token <- function(path) {
+  
+  lines <- scan(path, what = "character", sep = "\t", quiet = T)
+  line <- grep(pattern = "^authtoken = ", x = lines, value = T)
+  
+  token <- strsplit(line, split = ' ')[[1]][3]
+  return(token)
+}
+
+#' Override of synapser::synLogin() function to accept 
+#' custom path to .synapseConfig file or personal authentication
+#' token.  If no arguments are supplied, performs standard synLogin().
+#' 
+#' @param auth full path to .synapseConfig file or authentication token
+#' @param silent verbosity control on login
+#' @return TRUE for successful login; F otherwise
+synLogin <- function(auth = NA, silent = T) {
+  
+  secret <- Sys.getenv("SCHEDULED_JOB_SECRETS")
+  if (secret != "") {
+    # Synapse token stored as secret in json string
+    syn = synapser::synLogin(silent = T, authToken = fromJSON(secret)$SYNAPSE_AUTH_TOKEN)
+  } else if (auth == "~/.synapseConfig" || is.na(auth)) {
+    # default Synapse behavior
+    syn <- synapser::synLogin(silent = silent)
+  } else {
+    
+    # in case pat passed directly
+    token <- auth
+    
+    # extract token from custom path to .synapseConfig
+    if (grepl(x = auth, pattern = "\\.synapseConfig$")) {
+      token = get_auth_token(auth)
+      
+      if (is.na(token)) {
+        return(F)
+      }
+    }
+    
+    # login with token
+    syn <- tryCatch({
+      synapser::synLogin(authToken = token, silent = silent)
+    }, error = function(cond) {
+      return(F)
+    })
+  }
+  
+  # NULL returned indicates successful login
+  if (is.null(syn)) {
+    return(T)
+  }
+  return(F)
+}
+
 #' Determine if a Synapse entity has been modified within a certain time in the past.
 #' 
 #' @param synapse_id Synape ID of entity
