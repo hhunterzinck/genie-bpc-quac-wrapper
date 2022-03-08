@@ -4,10 +4,10 @@
 
 # pre-setup  ---------------------------
 
-library(optparse)
+library(argparse)
 library(glue)
 
-valid_unit <- c("day", "hour")
+choices_unit <- c("day", "hour")
 
 waitifnot <- function(cond, msg) {
   if (!cond) {
@@ -23,25 +23,20 @@ waitifnot <- function(cond, msg) {
 
 # user input ----------------------------
 
-option_list <- list( 
-  make_option(c("-v", "--value"), type = "integer", default = 1,
-              help="Number of time units (default: 1)"),
-  make_option(c("-u", "--unit"), type = "character", default = "day",
-              help=glue("Time unit (default: {valid_unit[1]}; choices: {paste0(valid_unit, collapse = ' ')})"))
-)
-opt <- parse_args(OptionParser(option_list=option_list))
+parser <- ArgumentParser()
+parser$add_argument("-v", dest = "value", type = "integer", default = 1,
+                    help = "Number of time units (default: 1)", required = F)
+parser$add_argument("-u", dest = "unit", type = "character", choices = choices_unit, default = choices_unit[1],
+                    help = glue("Time unit (default: {choices_unit[1]})", required = F))
+args <- parser$parse_args()
 
-value <- opt$value
-unit <- opt$unit
+value <- args$value
+unit <- args$unit
 
 # check user input  ---------------------
 
-waitifnot(is.element(opt$unit, valid_unit),
-          msg = c(glue("Error: '{opt$unit}' is not in valid time unit choices (choices: {paste0(valid_unit, collapse = ' ')}). "), 
-                  "Usage: Rscript genie-bpc-quac-wrapper.R -h"))
-
-waitifnot(opt$value > 0,
-          msg = c(glue("Error: time unit value ({opt$value}) must be positive."), 
+waitifnot(args$value > 0,
+          msg = c(glue("Error: --value ({args$value}) must be positive."), 
                   "Usage: Rscript genie-bpc-quac-wrapper.R -h"))
 
 # setup ----------------------------
