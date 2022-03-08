@@ -36,7 +36,18 @@ docker run -e SYNAPSE_AUTH_TOKEN=$SYNAPSE_AUTH_TOKEN --rm genie-bpc-quac-wrapper
 
 The command line interface will display as follows:
 ```
-{help}
+Usage: genie-bpc-quac-wrapper.R [options]
+
+
+Options:
+        -v VALUE, --value=VALUE
+                Number of time units (default: 1)
+
+        -u UNIT, --unit=UNIT
+                Time unit (default: day; choices: day hour)
+
+        -h, --help
+                Show this help message and exit
 ```
 
 Example run: 
