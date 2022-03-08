@@ -60,9 +60,9 @@ config <- read_yaml("config-wrapper.yaml")
 
 synid_folder_export <- ""
 if (testing) {
-  synid_folder_export <- config$synapse$exports$id
-} else {
   synid_folder_export <- config$synapse$testing$id
+} else {
+  synid_folder_export <- config$synapse$exports$id
 }
 synid_folders_cohort <- get_synapse_folder_children(synid_folder_export, include_types = list("folder"))
 
