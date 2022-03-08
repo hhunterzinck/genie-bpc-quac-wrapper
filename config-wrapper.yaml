@@ -1,10 +1,10 @@
 ---
 synapse:
   exports: 
-    id: syn20852283
+    id: syn27538188
     name: External REDCap exports
     type: folder
-    description: folder containing subfolders containing bpc upload files
+    description: folder containing subfolders containing test upload files
   reports:
     id: syn25832316
     name: QA Check
