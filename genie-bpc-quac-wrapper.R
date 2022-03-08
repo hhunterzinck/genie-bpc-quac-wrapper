@@ -24,14 +24,17 @@ waitifnot <- function(cond, msg) {
 # user input ----------------------------
 
 parser <- ArgumentParser()
-parser$add_argument("-v", dest = "value", type = "integer", default = 1,
+parser$add_argument("-v", "--value", dest = "value", type = "integer", default = 1,
                     help = "Number of time units (default: 1)", required = F)
-parser$add_argument("-u", dest = "unit", type = "character", choices = choices_unit, default = choices_unit[1],
-                    help = glue("Time unit (default: {choices_unit[1]})", required = F))
+parser$add_argument("-u", "--unit", dest = "unit", type = "character", choices = choices_unit, default = choices_unit[1],
+                    help = glue("Time unit (default: {choices_unit[1]})"), required = F)
+parser$add_argument("-t", "--testing", dest = "testing", action = "store_true", default = F,
+                    help = "Run on synthetic test uploads", required = F)
 args <- parser$parse_args()
 
 value <- args$value
 unit <- args$unit
+testing <- args$testing
 
 # check user input  ---------------------
 
@@ -55,7 +58,12 @@ config <- read_yaml("config-wrapper.yaml")
 
 # main ----------------------------
 
-synid_folder_export <- config$synapse$exports$id
+synid_folder_export <- ""
+if (testing) {
+  synid_folder_export <- config$synapse$exports$id
+} else {
+  synid_folder_export <- config$synapse$testing$id
+}
 synid_folders_cohort <- get_synapse_folder_children(synid_folder_export, include_types = list("folder"))
 
 for (cohort in config$cohorts) {

@@ -1,6 +1,11 @@
 ---
 synapse:
   exports: 
+    id: syn20852283
+    name: External REDCap exports
+    type: folder
+    description: folder containing subfolders containing BPC upload files
+  testing: 
     id: syn27538188
     name: External REDCap exports
     type: folder
