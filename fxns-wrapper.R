@@ -149,10 +149,18 @@ send_notification <- function(cohort, site) {
   
   synid_files_cohort <- get_synapse_folder_children(synid_folder_cohort, include_types = list("file"))
   synid_file_report <- as.character(synid_files_cohort[tolower(glue("{cohort}_{site}_upload_error.csv"))])
+  n_issue <- synGetAnnotations(synGet(synid_file_report))$issueCount[[1]]
   
   url <- glue("https://www.synapse.org/#!Synapse:{synid_file_report}")
-  subject <- glue("New BPC {cohort} {site} QA report available")
-  body <- glue("A new QA report for your recent BPC {cohort} {site} upload is available at the link below:\n\n{url}\n\nPlease correct the errors noted in the report and respond to this email with any questions.\n\nThank you,\nSage Bionetworks")
+  subject <- glue("GENIE BPC {cohort} {site} QA report")
+  
+  body <- glue("Thank you for your recent BPC {cohort} {site} upload.")
+  if (n_issue == 0) {
+    body <- glue("{body}\n\nAll quality assurance (QA) checks passed. No fixes are required.")
+  } else {
+    body <- glue("{body}\n\nA new quality assurance (QA) report is available: {url}\n\nPlease correct the issues ({n_issue}) and re-upload. Respond to this email with any questions.")
+  }
+  body <- glue("{body}\n\nSincerely,\nSage Bionetworks")
   
   res <- synSendMessage(userIds = list(user_ids), messageSubject = subject, messageBody = body)
   
