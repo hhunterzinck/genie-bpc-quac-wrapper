@@ -18,7 +18,7 @@ WORKDIR /usr/src/genie-bpc-quac-wrapper
 COPY . .
 
 RUN git clone git://github.com/hhunterzinck/genie-bpc-quac.git ../genie-bpc-quac
-RUN cp ../genie-bpc-quac/ .
+RUN cp ../genie-bpc-quac/* .
 
 RUN R -e 'renv::restore()'
 
