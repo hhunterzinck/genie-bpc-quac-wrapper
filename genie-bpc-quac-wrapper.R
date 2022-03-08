@@ -48,6 +48,7 @@ tic = as.double(Sys.time())
 
 library(dplyr)
 library(yaml)
+library(rjson)
 library(synapser)
 source("fxns-wrapper.R")
 
