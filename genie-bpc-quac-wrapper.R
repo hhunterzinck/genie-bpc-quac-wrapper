@@ -72,9 +72,11 @@ for (cohort in config$cohorts) {
   
   for (site in names(synid_folders_site)) {
     synid_files_site <- get_synapse_folder_children(as.character(synid_folders_site[site]), include_types = list("file"))
-    synid_file_data <- synid_files_site[glue("{site} {cohort} Data")]
+    idx <- grep(pattern = glue("{site} {cohort} Data"), x = names(synid_files_site))
+    synid_file_data <- synid_files_site[idx]
     
-    if (is_synapse_entity_modified(as.character(synid_file_data), value = value, unit = unit)) {
+    mod_flag <- any(sapply(as.character(synid_file_data), is_synapse_entity_modified, value = value, unit = unit))
+    if (mod_flag) {
       
       # run quality checks
       cmd <- glue("Rscript genie-bpc-quac.R -c {cohort} -s {site} -r upload -l error -u")
