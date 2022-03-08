@@ -2,11 +2,52 @@
 # Author: Haley Hunter-Zinck
 # Date: 2022-03-05
 
+# pre-setup  ---------------------------
+
+library(optparse)
+library(glue)
+
+valid_unit <- c("day", "hour")
+
+waitifnot <- function(cond, msg) {
+  if (!cond) {
+    
+    for (str in msg) {
+      message(str)
+    }
+    message("Press control-C to exit and try again.")
+    
+    while(T) {}
+  }
+}
+
+# user input ----------------------------
+
+option_list <- list( 
+  make_option(c("-v", "--value"), type = "integer", default = 1,
+              help="Number of time units (default: 1)"),
+  make_option(c("-u", "--unit"), type = "character", default = "day",
+              help=glue("Time unit (default: {valid_unit[1]}; choices: {paste0(valid_unit, collapse = ' ')})"))
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+
+value <- opt$value
+unit <- opt$unit
+
+# check user input  ---------------------
+
+waitifnot(is.element(opt$unit, valid_unit),
+          msg = c(glue("Error: '{opt$unit}' is not in valid time unit choices (choices: {paste0(valid_unit, collapse = ' ')}). "), 
+                  "Usage: Rscript genie-bpc-quac-wrapper.R -h"))
+
+waitifnot(opt$value > 0,
+          msg = c(glue("Error: time unit value ({opt$value}) must be positive."), 
+                  "Usage: Rscript genie-bpc-quac-wrapper.R -h"))
+
 # setup ----------------------------
 
 tic = as.double(Sys.time())
 
-library(glue)
 library(dplyr)
 library(yaml)
 library(synapser)
@@ -16,8 +57,6 @@ status <- synLogin()
 
 # parameters
 config <- read_yaml("config-wrapper.yaml")
-unit <- "hour"
-value <- 1
 
 # main ----------------------------
 
