@@ -2,7 +2,7 @@
 # Author: Haley Hunter-Zinck
 # Date: 2022-03-05
 
-config <- read_yaml("config.yaml")
+config <- read_yaml("config-wrapper.yaml")
 
 # functions ----------------------------
 
@@ -32,7 +32,7 @@ synLogin <- function(auth = NA, silent = T) {
   secret <- Sys.getenv("SCHEDULED_JOB_SECRETS")
   if (secret != "") {
     # Synapse token stored as secret in json string
-    syn = synapser::synLogin(silent = T, authToken = fromJSON(secret)$SYNAPSE_AUTH_TOKEN)
+    syn = synapser::synLogin(silent = silent, authToken = fromJSON(secret)$SYNAPSE_AUTH_TOKEN)
   } else if (auth == "~/.synapseConfig" || is.na(auth)) {
     # default Synapse behavior
     syn <- synapser::synLogin(silent = silent)

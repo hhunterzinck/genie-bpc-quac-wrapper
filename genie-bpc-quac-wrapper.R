@@ -12,7 +12,7 @@ library(yaml)
 library(synapser)
 source("fxns-wrapper.R")
 
-synlogin_status <- synLogin()
+status <- synLogin()
 
 # parameters
 config <- read_yaml("config-wrapper.yaml")
