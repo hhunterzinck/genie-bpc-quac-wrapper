@@ -22,11 +22,6 @@ Cache your Synapse personal access token (PAT) as an environmental variable:
 export SYNAPSE_AUTH_TOKEN={your_personal_access_token_here}
 ```
 
-or store as a secret: 
-```
-"SYNAPSE_AUTH_TOKEN":"{your_personal_access_token_here}"
-```
-
 ## Usage 
 
 To display the command line interface:
@@ -36,7 +31,7 @@ docker run -e SYNAPSE_AUTH_TOKEN=$SYNAPSE_AUTH_TOKEN --rm genie-bpc-quac-wrapper
 
 The command line interface will display as follows:
 ```
-usage: genie-bpc-quac-wrapper.R [-h] [-v VALUE] [-u {day,hour}] [-t]
+usage: genie-bpc-quac-wrapper.R [-h] [-v VALUE] [-u {day,hour}] [-t] [-d]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -45,9 +40,10 @@ optional arguments:
   -u {day,hour}, --unit {day,hour}
                         Time unit (default: day)
   -t, --testing         Run on synthetic test uploads
+  -d, --verbose         Verbose reporting on script progress to the user
 ```
 
 Example run: 
 ```
-docker run -e SYNAPSE_AUTH_TOKEN=$SYNAPSE_AUTH_TOKEN --rm genie-bpc-quac-wrapper -v
+docker run -e SYNAPSE_AUTH_TOKEN=$SYNAPSE_AUTH_TOKEN --rm genie-bpc-quac-wrapper -d 
 ```
