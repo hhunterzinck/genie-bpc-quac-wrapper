@@ -73,7 +73,7 @@ if (verbose) {
 # main ----------------------------
 
 if (verbose) {
-  print(glue("{now(timeOnly = T)}: Gathering cohort folders to monitor..."))
+  print(glue("{now(timeOnly = T)}: gathering cohort folders..."))
 }
 
 synid_folder_export <- ""
@@ -87,7 +87,7 @@ synid_folders_cohort <- get_synapse_folder_children(synid_folder_export, include
 for (cohort in config$cohorts) {
   
   if (verbose) {
-    print(glue("  {now(timeOnly = T)}: monitoring cohort {cohort}..."))
+    print(glue("  {now(timeOnly = T)}: gathering site folders for cohort {cohort}..."))
   }
   
   synid_folders_site <- get_synapse_folder_children(as.character(synid_folders_cohort[cohort]), include_types = list("folder"))
@@ -125,6 +125,10 @@ for (cohort in config$cohorts) {
       
       # send notification
       msg <- send_notification(cohort, site, reports = reports)
+    } else {
+      if (verbose) {
+        print(glue("      {now(timeOnly = T)}:  {cohort}-{site} ({as.character(synid_file_data)}) not modified...skipping."))
+      }
     }
   }
 }
