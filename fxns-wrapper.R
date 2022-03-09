@@ -140,7 +140,9 @@ get_synapse_user_id <- function(user_name) {
   return(synGetUserProfile(user_name)$ownerId)
 }
 
-send_notification <- function(cohort, site) {
+#' Send email to points of contact for requested reports if issues are detected.  
+send_notification <- function(cohort, site, reports = c("upload", "masking")) {
+  
   user_names <- config$contacts[[site]]
   user_ids <- as.character(sapply(user_names, get_synapse_user_id))
   
@@ -148,17 +150,28 @@ send_notification <- function(cohort, site) {
   synid_folder_cohort <- as.character(synid_folders_cohort[cohort])
   
   synid_files_cohort <- get_synapse_folder_children(synid_folder_cohort, include_types = list("file"))
-  synid_file_report <- as.character(synid_files_cohort[tolower(glue("{cohort}_{site}_upload_error.csv"))])
-  n_issue <- synGetAnnotations(synGet(synid_file_report))$issueCount[[1]]
   
-  url <- glue("https://www.synapse.org/#!Synapse:{synid_file_report}")
+  urls <- c()
+  n_issues <- c()
+  for (report in reports) {
+    synid_file_report <- as.character(synid_files_cohort[tolower(glue("{cohort}_{site}_{report}_error.csv"))])
+    urls[report] <- glue("https://www.synapse.org/#!Synapse:{synid_file_report}")
+    n_issues[report] <- synGetAnnotations(synGet(synid_file_report))$issueCount[[1]]
+  }
+  
   subject <- glue("GENIE BPC {cohort} {site} QA report")
   
   body <- glue("Thank you for your recent BPC {cohort} {site} upload.")
-  if (n_issue == 0) {
+  if (sum(n_issues) == 0) {
     body <- glue("{body}\n\nAll quality assurance (QA) checks passed. No fixes are required.")
   } else {
-    body <- glue("{body}\n\nA new quality assurance (QA) report is available: {url}\n\nPlease correct the issues ({n_issue}) and re-upload. Respond to this email with any questions.")
+    body <- glue("{body}\n\nA new quality assurance (QA) report(s) are available:")
+    for(report in reports) {
+      if (n_issues[report] > 0) {
+        body <- glue("{body}\n- {report} ({n_issues[report]} issues): {urls[report]}")
+      }
+    }
+    body <- glue("{body}\n\nPlease correct the issues and re-upload. Respond to this email with any questions.")
   }
   body <- glue("{body}\n\nSincerely,\nSage Bionetworks")
   

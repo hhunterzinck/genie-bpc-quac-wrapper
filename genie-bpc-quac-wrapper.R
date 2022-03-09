@@ -79,7 +79,11 @@ for (cohort in config$cohorts) {
     mod_flag <- any(sapply(as.character(synid_file_data), is_synapse_entity_modified, value = value, unit = unit))
     if (mod_flag) {
       
-      # run quality checks
+      # run upload quality checks
+      cmd <- glue("Rscript genie-bpc-quac.R -c {cohort} -s {site} -r upload -l error -u")
+      system(cmd)
+      
+      # run masking quality checks
       cmd <- glue("Rscript genie-bpc-quac.R -c {cohort} -s {site} -r upload -l error -u")
       system(cmd)
       
