@@ -30,11 +30,14 @@ parser$add_argument("-u", "--unit", dest = "unit", type = "character", choices =
                     help = glue("Time unit (default: {choices_unit[1]})"), required = F)
 parser$add_argument("-t", "--testing", dest = "testing", action = "store_true", default = F,
                     help = "Run on synthetic test uploads", required = F)
+parser$add_argument("-d", "--verbose", dest = "verbose", action = "store_true", default = F,
+                    help = "Verbose reporting on script progress to the user", required = F)
 args <- parser$parse_args()
 
 value <- args$value
 unit <- args$unit
 testing <- args$testing
+verbose <- args$verbose
 
 # check user input  ---------------------
 
@@ -56,8 +59,22 @@ status <- synLogin()
 
 # parameters
 config <- read_yaml("config-wrapper.yaml")
+reports <- config$report
+
+# parameter overview
+if (verbose) {
+  print(glue("Parameters: "))
+  print(glue("- value:\t{value}"))
+  print(glue("- unit:{unit}"))
+  print(glue("- testing:\t{testing}"))
+  print(glue("- verbose:t{verbose}"))
+}
 
 # main ----------------------------
+
+if (verbose) {
+  print(glue("{now()}: Gathering cohort folders to monitor..."))
+}
 
 synid_folder_export <- ""
 if (testing) {
@@ -69,9 +86,18 @@ synid_folders_cohort <- get_synapse_folder_children(synid_folder_export, include
 
 for (cohort in config$cohorts) {
   
+  if (verbose) {
+    print(glue("\t{now()}: Monitoring cohort {cohort}..."))
+  }
+  
   synid_folders_site <- get_synapse_folder_children(as.character(synid_folders_cohort[cohort]), include_types = list("folder"))
   
   for (site in names(synid_folders_site)) {
+    
+    if (verbose) {
+      print(glue("\t\t{now()}: Monitoring site {site}..."))
+    }
+    
     synid_files_site <- get_synapse_folder_children(as.character(synid_folders_site[site]), include_types = list("file"))
     idx <- grep(pattern = glue("{site} {cohort} Data"), x = names(synid_files_site))
     synid_file_data <- synid_files_site[idx]
@@ -79,16 +105,26 @@ for (cohort in config$cohorts) {
     mod_flag <- any(sapply(as.character(synid_file_data), is_synapse_entity_modified, value = value, unit = unit))
     if (mod_flag) {
       
-      # run upload quality checks
-      cmd <- glue("Rscript genie-bpc-quac.R -c {cohort} -s {site} -r upload -l error -u")
-      system(cmd)
+      if (verbose) {
+        print(glue("\t\t{now()}: detected {cohort}-{site} ({as.character(synid_file_data)}) modified..."))
+      }
       
-      # run masking quality checks
-      cmd <- glue("Rscript genie-bpc-quac.R -c {cohort} -s {site} -r masking -l error -u")
-      system(cmd)
+      for (report in reports) {
+        if (verbose) {
+          print(glue("\t\t{now()}: running {cohort}-{site} ({as.character(synid_file_data)}) {report} report..."))
+        }
+        
+        # run {report} quality checks
+        cmd <- glue("Rscript genie-bpc-quac.R -c {cohort} -s {site} -r {report} -l error -u")
+        system(cmd)
+      }
+      
+      if (verbose) {
+        print(glue("\t\t{now()}: sending notification for {cohort}-{site} reports..."))
+      }
       
       # send notification
-      msg <- send_notification(cohort, site)
+      msg <- send_notification(cohort, site, reports = reports)
     }
   }
 }

@@ -22,6 +22,9 @@ cohorts:
 - NSCLC
 - PANC
 - Prostate
+reports:
+- upload
+- masking
 contacts:
   DFCI:
   - hhz

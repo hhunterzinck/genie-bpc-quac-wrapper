@@ -6,6 +6,24 @@ config <- read_yaml("config-wrapper.yaml")
 
 # functions ----------------------------
 
+#' Print out a current timestamp.  Mostly used for debuggging statements.
+#'
+#' @param timeOnly Indicate whether to remove date from the timestamp
+#' @param tz Time zone designation for the timestamp
+#' @return String representing the current timestamp.
+#' @example
+#' now(timeOnly = T)
+now <- function(timeOnly = F, tz = "US/Pacific") {
+  
+  Sys.setenv(TZ = tz)
+  
+  if (timeOnly) {
+    return(format(Sys.time(), "%H:%M:%S"))
+  }
+  
+  return(format(Sys.time(), "%Y-%m-%d %H:%M:%S"))
+}
+
 #' Extract personal access token from .synapseConfig
 #' located at a custom path. 
 #' 
@@ -165,7 +183,7 @@ send_notification <- function(cohort, site, reports = c("upload", "masking")) {
   if (sum(n_issues) == 0) {
     body <- glue("{body}\n\nAll quality assurance (QA) checks passed. No fixes are required.")
   } else {
-    body <- glue("{body}\n\nA new quality assurance (QA) report(s) are available:")
+    body <- glue("{body}\n\nNew quality assurance (QA) report(s) available:")
     for(report in reports) {
       if (n_issues[report] > 0) {
         body <- glue("{body}\n- {report} ({n_issues[report]} issues): {urls[report]}")
