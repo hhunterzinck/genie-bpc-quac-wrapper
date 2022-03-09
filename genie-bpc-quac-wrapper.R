@@ -65,9 +65,9 @@ reports <- config$report
 if (verbose) {
   print(glue("Parameters: "))
   print(glue("- value:\t{value}"))
-  print(glue("- unit:{unit}"))
+  print(glue("- unit:\t{unit}"))
   print(glue("- testing:\t{testing}"))
-  print(glue("- verbose:t{verbose}"))
+  print(glue("- verbose:\t{verbose}"))
 }
 
 # main ----------------------------
@@ -87,7 +87,7 @@ synid_folders_cohort <- get_synapse_folder_children(synid_folder_export, include
 for (cohort in config$cohorts) {
   
   if (verbose) {
-    print(glue("\t{now(timeOnly = T)}: Monitoring cohort {cohort}..."))
+    print(glue("  {now(timeOnly = T)}: monitoring cohort {cohort}..."))
   }
   
   synid_folders_site <- get_synapse_folder_children(as.character(synid_folders_cohort[cohort]), include_types = list("folder"))
@@ -95,7 +95,7 @@ for (cohort in config$cohorts) {
   for (site in names(synid_folders_site)) {
     
     if (verbose) {
-      print(glue("\t\t{now(timeOnly = T)}: Monitoring site {site}..."))
+      print(glue("    {now(timeOnly = T)}: monitoring site {site}..."))
     }
     
     synid_files_site <- get_synapse_folder_children(as.character(synid_folders_site[site]), include_types = list("file"))
@@ -106,12 +106,12 @@ for (cohort in config$cohorts) {
     if (mod_flag) {
       
       if (verbose) {
-        print(glue("\t\t{now(timeOnly = T)}: detected {cohort}-{site} ({as.character(synid_file_data)}) modified..."))
+        print(glue("      {now(timeOnly = T)}: detected {cohort}-{site} ({as.character(synid_file_data)}) modified..."))
       }
       
       for (report in reports) {
         if (verbose) {
-          print(glue("\t\t{now(timeOnly = T)}: running {cohort}-{site} ({as.character(synid_file_data)}) {report} report..."))
+          print(glue("      {now(timeOnly = T)}: running {cohort}-{site} ({as.character(synid_file_data)}) {report} report..."))
         }
         
         # run {report} quality checks
@@ -120,7 +120,7 @@ for (cohort in config$cohorts) {
       }
       
       if (verbose) {
-        print(glue("\t\t{now(timeOnly = T)}: sending notification for {cohort}-{site} reports..."))
+        print(glue("      {now(timeOnly = T)}: sending notification for {cohort}-{site} reports..."))
       }
       
       # send notification
@@ -133,5 +133,5 @@ for (cohort in config$cohorts) {
 
 toc = as.double(Sys.time())
 if (verbose) {
-  print(glue("{now(timeOnly = T)}: runtime: {round(toc - tic)} s"))
+  print(glue("{now(timeOnly = T)}: runtime {round(toc - tic)} s"))
 }
