@@ -84,7 +84,7 @@ for (cohort in config$cohorts) {
       system(cmd)
       
       # run masking quality checks
-      cmd <- glue("Rscript genie-bpc-quac.R -c {cohort} -s {site} -r upload -l error -u")
+      cmd <- glue("Rscript genie-bpc-quac.R -c {cohort} -s {site} -r masking -l error -u")
       system(cmd)
       
       # send notification
