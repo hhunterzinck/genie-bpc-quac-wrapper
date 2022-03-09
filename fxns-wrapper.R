@@ -162,7 +162,7 @@ send_notification <- function(cohort, site) {
   }
   body <- glue("{body}\n\nSincerely,\nSage Bionetworks")
   
-  res <- synSendMessage(userIds = list(user_ids), messageSubject = subject, messageBody = body)
+  res <- synSendMessage(userIds = as.list(user_ids), messageSubject = subject, messageBody = body)
   
   return(res)
 }
