@@ -1,5 +1,11 @@
 # GENIE BPC Quality Assurance Checklist Wrapper
 
+## Note
+
+Active version now transferred to Sage-Bionetworks organization: https://github.com/Sage-Bionetworks/genie-bpc-quac-wrapper
+
+## Overview
+
 Wrapper for the Quality Assurance Checklist to monitor requested upload entities and notify points of contact upon modification and error report production.  Designed to be run with Service Catalog scheduled jobs.  
 
 ## Installation
